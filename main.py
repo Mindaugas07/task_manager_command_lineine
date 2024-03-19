@@ -1,17 +1,37 @@
+# Task Nr.2:
+# Create a command-line task manager application using Python and MongoDB.
+# The application should allow users to perform basic CRUD operations (Create, Read, Update, Delete)
+# on tasks stored in a MongoDB database. Users should be able to add new tasks, view all tasks, update task status, and delete tasks.
+
+# Requirements:
+
+# The application should utilize the PyMongo library for interacting with the MongoDB database.
+# Users should be able to perform the following actions: - Add a new task with a title and description.
+# - View all tasks with their details. - Update the status of a task (e.g., mark as completed or in progress). - Delete a task.
+# Implement error handling and validation for user inputs.
+# Use appropriate functions and modular code structure for better code organization.
+# Include a README file with clear instructions on how to set up and run the application.
+
 import datetime, os
 from random import randint
 from pymongo import MongoClient
 from pymongo.collection import Collection
 from typing import Dict, List, Union
+from pymongo.errors import ConfigurationError, PyMongoError
 
 
 class MongoDB:
-    def __init__(
-        self, host: str, port: int, db_name: str, collection_name: str
-    ) -> None:
-        self.client = MongoClient(host, port)
-        self.db = self.client[db_name]
-        self.collection = self.db[collection_name]
+    try:
+
+        def __init__(
+            self, host: str, port: int, db_name: str, collection_name: str
+        ) -> None:
+            self.client = MongoClient(host, port)
+            self.db = self.client[db_name]
+            self.collection = self.db[collection_name]
+
+    except ConfigurationError as e:
+        print("Configuration error:", str(e))
 
     def find_documents(self, query: Dict) -> List[Dict]:
         documents = self.collection.find(query)
@@ -104,18 +124,6 @@ class MongoDB:
         return list(result)
 
 
-def show_app_menu() -> str:
-
-    return input(
-        f"""
-If you want to add a new task press {"--1--":^35}
-If you want to view all tasks press {"--2--":^35} 
-
-Press --9-- to quit our app                          
-"""
-    )
-
-
 if __name__ == "__main__":
     taskdb = MongoDB(
         host="localhost",
@@ -125,6 +133,17 @@ if __name__ == "__main__":
     )
 
     os.system("cls")
+
+    def show_app_menu() -> str:
+
+        return input(
+            f"""
+If you want to add a new task press {"--1--":^35}
+If you want to view all tasks press {"--2--":^35} 
+
+Press --9-- to quit our app                          
+"""
+        )
 
     while True:
         try:
@@ -154,46 +173,46 @@ if __name__ == "__main__":
                 )
             print()
             user_option = input(
-                """Enter the number of the task which you wand to delete: 
+                """Enter the number of the task which you want to delete or change it's status: 
                 
-Press --9-- to go back
+Press --8-- to go back
 """
             )
-            if user_option == "9":
+            if user_option == "8":
                 os.system("cls")
-
                 user_option = show_app_menu()
+                if user_option == "9":
+                    os.system("cls")
+                    break
 
             else:
                 selected_document = task_details[int(user_option) - 1]
                 query = {"_id": selected_document["_id"]}
-                taskdb.delete_one_documents(query)
-                os.system("cls")
-                print(f"Task '{task['title']}' was deleted!")
+                # task_details = taskdb.find_documents(query)
+                # os.system("cls")
+                # print(
+                #     f"Task nr. {index}.-- {task['title']}. Description: {task['description']}. Status: {task['status']}"
+                # )
+                # print()
 
-        #     print(user_table_option)
-        #     if user_table_option == "1":
-        #         jazz_place.reserve_table(int(user_table_option))
-        #         os.system("cls")
-        #         user_options()
+                user_option = input(
+                    "Press 1 for updating status or 2 for deleting the task: "
+                )
+                if user_option == 1:
 
-        #     elif user_table_option == "2":
-        #         jazz_place.reserve_table(int(user_table_option))
-        #         user_options()
+                    taskdb.update_one_document(query, {"status": "Finished"})
+                    os.system("cls")
+                    print(
+                        f"The status of the task '{task['title']}' was changed to 'Finished'!"
+                    )
+                elif user_option == 2:
+                    taskdb.delete_one_documents(query)
+                    os.system("cls")
+                    print(f"Task '{task['title']}' was deleted!")
 
-        #     elif user_table_option == "9":
-        #         os.system("cls")
-        #         print(jazz_place)
-        #         user_options()
-
-        # elif user_option == "3":
-        #     os.system("cls")
-        #     print(jazz_place)
-        #     jazz_place.reserve_table(1)
-
-        # elif user_option == "4":
-        #     os.system("cls")
-        #     print(jazz_place)
+                # taskdb.delete_one_documents(query)
+                # os.system("cls")
+                # print(f"Task '{task['title']}' was deleted!")
 
         elif user_option == "9":
             os.system("cls")
