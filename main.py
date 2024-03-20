@@ -178,6 +178,7 @@ Press --9-- to quit our app
 Press --8-- to go back
 """
             )
+            os.system("cls")
             if user_option == "8":
                 os.system("cls")
                 user_option = show_app_menu()
@@ -185,7 +186,7 @@ Press --8-- to go back
                     os.system("cls")
                     break
 
-            elif user_option != "8":
+            elif int(user_option) <= len(task_details):
                 selected_document = task_details[int(user_option) - 1]
                 query = {"_id": selected_document["_id"]}
                 task_details = taskdb.find_documents(query)
@@ -195,24 +196,32 @@ Press --8-- to go back
                 )
                 print()
 
-                user_option = input(
-                    "Press 1 for updating status or 2 for deleting the task: "
-                )
-                if user_option == "1":
-                    if task_details[0]["status"] == "In progress":
-                        taskdb.update_one_document(query, {"status": "Finished"})
-                    else:
-                        taskdb.update_one_document(query, {"status": "In progress"})
+                try:
+                    user_option = input(
+                        "Press 1 for updating status or 2 for deleting the task: "
+                    )
+                    os.system("cls")
+                    if user_option == "1":
+                        if task_details[0]["status"] == "In progress":
+                            taskdb.update_one_document(query, {"status": "Finished"})
+                        else:
+                            taskdb.update_one_document(query, {"status": "In progress"})
+                            os.system("cls")
+                        print(f"The status of the task '{task['title']}' was changed!")
+                        # os.system("cls")
+                    elif user_option == "2":
+                        taskdb.delete_one_documents(query)
                         os.system("cls")
-                    print(f"The status of the task '{task['title']}' was changed!")
-                    os.system("cls")
-                elif user_option == "2":
-                    taskdb.delete_one_documents(query)
-                    os.system("cls")
-                    print(f"Task '{task_details[0]['title']}' was deleted!")
-
-                
+                        print(f"Task '{task_details[0]['title']}' was deleted!")
+                    else:
+                        print("Wrong input! Please try again!")
+                except:
+                    print("Wrong input! Please enter a number from the list...")
 
         elif user_option == "9":
             os.system("cls")
             break
+
+        else:
+            os.system("cls")
+            print("Wrong input! Please enter a number from the list...")
