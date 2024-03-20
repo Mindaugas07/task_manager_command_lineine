@@ -185,34 +185,33 @@ Press --8-- to go back
                     os.system("cls")
                     break
 
-            else:
+            elif user_option != "8":
                 selected_document = task_details[int(user_option) - 1]
                 query = {"_id": selected_document["_id"]}
-                # task_details = taskdb.find_documents(query)
-                # os.system("cls")
-                # print(
-                #     f"Task nr. {index}.-- {task['title']}. Description: {task['description']}. Status: {task['status']}"
-                # )
-                # print()
+                task_details = taskdb.find_documents(query)
+                os.system("cls")
+                print(
+                    f"Task-- {task_details[0]['title']}. Description: {task_details[0]['description']}. Status: {task_details[0]['status']}"
+                )
+                print()
 
                 user_option = input(
                     "Press 1 for updating status or 2 for deleting the task: "
                 )
-                if user_option == 1:
-
-                    taskdb.update_one_document(query, {"status": "Finished"})
+                if user_option == "1":
+                    if task_details[0]["status"] == "In progress":
+                        taskdb.update_one_document(query, {"status": "Finished"})
+                    else:
+                        taskdb.update_one_document(query, {"status": "In progress"})
+                        os.system("cls")
+                    print(f"The status of the task '{task['title']}' was changed!")
                     os.system("cls")
-                    print(
-                        f"The status of the task '{task['title']}' was changed to 'Finished'!"
-                    )
-                elif user_option == 2:
+                elif user_option == "2":
                     taskdb.delete_one_documents(query)
                     os.system("cls")
-                    print(f"Task '{task['title']}' was deleted!")
+                    print(f"Task '{task_details[0]['title']}' was deleted!")
 
-                # taskdb.delete_one_documents(query)
-                # os.system("cls")
-                # print(f"Task '{task['title']}' was deleted!")
+                
 
         elif user_option == "9":
             os.system("cls")
